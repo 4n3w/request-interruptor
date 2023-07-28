@@ -1,0 +1,6 @@
+---
+applications:
+- name: request-interruptor
+  health-check-type: process
+  env:
+    SERVICE_URL: http://redacted
