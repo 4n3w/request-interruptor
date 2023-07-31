@@ -4,3 +4,6 @@ applications:
   health-check-type: process
   env:
     SERVICE_URL: http://redacted
+    CANCEL_INTERVAL_MS: 1 # how long should we wait before cancelling a bad request
+    FREQUENCY_S: 5 # how often should we fire a request to the service url
+    BAD_REQUEST_FREQUENCY: 2 # every second request will attempt to cause a client disconnect

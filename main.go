@@ -6,17 +6,37 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 )
 
 func main() {
-	ticker := time.NewTicker(1 * time.Minute)
+
 	counter := 0
 	url := os.Getenv("SERVICE_URL")
+	cancelIntervalMs, err := strconv.Atoi(os.Getenv("CANCEL_INTERVAL_MS"))
+
+	if err != nil || cancelIntervalMs <= 0 {
+		log.Fatal("You need to specify a valid CANCEL_INTERVAL_MS in your environment variables")
+	}
+
+	frequency, err := strconv.Atoi(os.Getenv("FREQUENCY_S"))
+
+	if err != nil || frequency <= 0 {
+		log.Fatal("You need to specify a valid FREQUENCY_S in your environment variables")
+	}
+
+	badRequestFrequency, err := strconv.Atoi(os.Getenv("BAD_REQUEST_FREQUENCY"))
+
+	if err != nil || badRequestFrequency <= 0 {
+		log.Fatal("You need to specify a valid BAD_REQUEST_FREQUENCY in your environment variables")
+	}
 
 	if len(url) == 0 {
 		log.Fatal("You need to specify SERVICE_URL in your environment variables")
 	}
+
+	ticker := time.NewTicker(time.Duration(frequency) * time.Second)
 
 	for range ticker.C {
 		counter++
@@ -28,9 +48,9 @@ func main() {
 			continue
 		}
 
-		if counter%7 == 0 {
-			// Create a context that will cancel the request after 1 nanosecond
-			ctx, cancel := context.WithTimeout(context.Background(), 1*time.Nanosecond)
+		if counter%badRequestFrequency == 0 {
+			// Create a context that will cancel the request after 25 ms
+			ctx, cancel := context.WithTimeout(context.Background(), time.Duration(cancelIntervalMs)*time.Millisecond)
 			defer cancel()
 
 			// Attach the context to our request
