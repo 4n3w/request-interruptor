@@ -60,11 +60,11 @@ func main() {
 		resp, err := client.Do(req)
 
 		if err != nil {
-
 			fmt.Printf("[%s] Request error [count: %d] : %s\n", time.Now().Format(time.RFC3339), counter, err)
 		} else {
 			defer resp.Body.Close()
 			fmt.Printf("[%s] Request successful. code: [%d] [count: %d]\n", time.Now().Format(time.RFC3339), resp.StatusCode, counter)
+			time.Sleep(500 * time.Millisecond)
 
 		}
 	}
